@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>紅杉有限公司 ｜ 合約填寫系統</title>
+<style>
+:root {
+  --red:#E8493F; --red-light:#EC6058;
+  --admin-bg:#FDEAE9; --admin-bd:#E8493F;
+  --kol-bg:#F5EDE8; --kol-bd:#8B5240;
+  --bd:#DDDDDD; --text:#333; --muted:#888;
+  --locked-bg:#F5F5F5; --locked-text:#BBBBBB;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;
+  background:#FCEADF;color:var(--text);font-size:14px;}
+
+/* HEADER */
+header{background:var(--red);color:#fff;padding:12px 24px;
+  display:flex;justify-content:space-between;align-items:center;}
+.logo{font-size:17px;font-weight:800;letter-spacing:1px;}
+.logo small{font-size:11px;opacity:.75;margin-left:8px;font-weight:400;}
+.mode-area{display:flex;align-items:center;gap:10px;}
+.mode-badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;}
+.mode-badge.kol{background:rgba(255,255,255,.18);color:#fff;}
+.mode-badge.admin{background:#FCEADF;color:#482622;}
+.mode-btn{padding:6px 14px;border:1px solid rgba(255,255,255,.5);background:transparent;
+  color:#fff;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;}
+.mode-btn:hover{background:rgba(255,255,255,.15);}
+
+/* TABS */
+.tabs{display:flex;background:#fff;border-bottom:2px solid #E8D4CC;padding:0 24px;}
+.tab-btn{padding:14px 22px;border:none;background:none;cursor:pointer;font-size:14px;
+  font-weight:500;color:var(--muted);border-bottom:3px solid transparent;
+  margin-bottom:-2px;transition:all .2s;}
+.tab-btn.active{color:var(--red);border-bottom-color:var(--red);font-weight:700;}
+
+/* MAIN */
+.main{max-width:860px;margin:24px auto;padding:0 16px 80px;}
+
+/* LEGEND */
+.legend{display:flex;gap:16px;margin-bottom:16px;font-size:12px;
+  flex-wrap:wrap;color:var(--muted);}
+.legend-item{display:flex;align-items:center;gap:5px;}
+.ld{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.ld-admin{background:var(--admin-bg);border:1px solid var(--admin-bd);}
+.ld-kol{background:var(--kol-bg);border:1px solid var(--kol-bd);}
+.ld-fixed{background:#F5F5F5;border:1px solid #C4B5AF;}
+
+/* CARD */
+.card{background:#fff;border:1px solid #E8D4CC;border-radius:12px;
+  margin-bottom:16px;overflow:hidden;}
+.card-header{background:#F8EDE9;padding:11px 20px;font-weight:700;font-size:14px;
+  border-bottom:1px solid #E8D4CC;color:var(--red);}
+
+/* SECTION DIVIDER */
+.sec{background:#F0E0D8;padding:9px 20px;font-weight:700;font-size:12px;
+  color:#482622;border-top:1px solid #E0C8BF;border-bottom:1px solid #E0C8BF;
+  text-transform:uppercase;letter-spacing:.5px;}
+
+/* FORM */
+.fb{padding:20px;}
+.row{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+.f{flex:1;min-width:150px;}
+.f.full{flex:0 0 100%;min-width:0;}
+.f.half{flex:0 0 calc(50% - 7px);min-width:180px;}
+.f.third{flex:0 0 calc(33.33% - 10px);min-width:140px;}
+
+label.fl{display:block;font-size:11px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;}
+.ob{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;
+  margin-left:4px;font-weight:500;text-transform:none;letter-spacing:0;vertical-align:1px;}
+.ob-a{background:#FAD8D6;color:#9C1C14;}
+.ob-k{background:#EDE3DF;color:#5C3D36;}
+
+input,textarea,select{width:100%;padding:8px 11px;border:1px solid var(--bd);
+  border-radius:6px;font-size:13px;font-family:inherit;color:var(--text);
+  transition:border-color .15s,background .15s;}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#888;}
+textarea{resize:vertical;min-height:72px;}
+
+/* OWNED FIELD COLOURS */
+[data-owner="admin"] input,[data-owner="admin"] textarea,[data-owner="admin"] select{
+  background:var(--admin-bg);border-color:var(--admin-bd);}
+[data-owner="admin"] input:focus,[data-owner="admin"] textarea:focus,[data-owner="admin"] select:focus{
+  border-color:#C93028;}
+
+[data-owner="kol"] input,[data-owner="kol"] textarea,[data-owner="kol"] select{
+  background:var(--kol-bg);border-color:var(--kol-bd);}
+[data-owner="kol"] input:focus,[data-owner="kol"] textarea:focus,[data-owner="kol"] select:focus{
+  border-color:#482622;}
+
+/* LOCKED */
+[data-owner].locked input,[data-owner].locked textarea,[data-owner].locked select,
+[data-owner].locked canvas{
+  background:var(--locked-bg)!important;border-color:#DEDEDE!important;
+  color:var(--locked-text)!important;cursor:not-allowed!important;pointer-events:none;}
+[data-owner].locked .img-zone{pointer-events:none;opacity:.5;}
+
+/* FIXED */
+[data-owner="fixed"] input,[data-owner="fixed"] textarea{
+  background:#FAFAFA;color:#555;cursor:default;}
+
+/* AMOUNT TABLE */
+.amt-wrap{overflow-x:auto;margin:12px 0;}
+.amt-tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:560px;}
+.amt-tbl th{background:#F0E0D8;padding:8px 10px;text-align:center;font-size:11px;
+  font-weight:600;border:1px solid var(--bd);}
+.amt-tbl td{padding:8px 10px;border:1px solid var(--bd);text-align:center;vertical-align:middle;}
+.amt-tbl td:first-child{text-align:left;font-weight:600;width:130px;}
+.amt-val{font-weight:700;}
+.amt-real{color:var(--red);font-size:15px;}
+.deduct-val{color:#E8493F;}
+
+.amt-input-wrap{position:relative;}
+.amt-input-wrap span{position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:13px;pointer-events:none;}
+.amt-input-wrap input{padding-left:42px;}
+
+/* SIGNATURE */
+.sig-wrap{border:1px solid var(--bd);border-radius:8px;overflow:hidden;background:#fff;}
+.sig-canvas{display:block;touch-action:none;cursor:crosshair;}
+.sig-bar{padding:6px 12px;background:#FAFAFA;border-top:1px solid var(--bd);
+  display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);}
+.sig-clear{padding:3px 10px;border:1px solid #DDD;background:#fff;border-radius:4px;
+  cursor:pointer;font-size:11px;}
+.sig-clear:hover{background:#FDEAE9;border-color:#E8493F;color:#C93028;}
+
+/* IMAGE UPLOAD */
+.img-zone{border:2px dashed var(--bd);border-radius:8px;padding:20px 16px;
+  text-align:center;cursor:pointer;background:#FAFAFA;transition:all .2s;position:relative;}
+.img-zone:hover{border-color:#999;background:#F2F2F2;}
+.img-zone input[type="file"]{display:none;}
+.img-hint{font-size:12px;color:var(--muted);line-height:1.5;}
+.img-hint .icon{font-size:24px;display:block;margin-bottom:4px;}
+.img-preview{width:100%;max-height:180px;object-fit:contain;border-radius:4px;
+  display:none;margin-bottom:8px;}
+.img-zone.has-img .img-hint{display:none;}
+.img-zone.has-img .img-preview{display:block;}
+.img-remove{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;
+  background:rgba(0,0,0,.5);color:#fff;border:none;cursor:pointer;font-size:14px;
+  display:none;justify-content:center;align-items:center;}
+.img-zone.has-img .img-remove{display:flex;}
+
+/* FIXED TEXT BLOCK */
+.fixed-block{background:#FAFAFA;border:1px solid #EEE;border-radius:8px;
+  padding:16px;font-size:12px;line-height:1.8;color:#555;}
+.fixed-block p{margin-bottom:10px;}
+.fixed-block p:last-child{margin-bottom:0;}
+
+/* SIGN SECTION */
+.sign-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.sign-label{font-size:11px;font-weight:600;color:var(--muted);
+  text-align:center;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
+
+/* PARTY TABLE */
+.party-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--bd);
+  border-radius:8px;overflow:hidden;}
+.party-col{padding:20px;}
+.party-col:first-child{border-right:1px solid var(--bd);}
+.party-title{font-weight:700;font-size:13px;margin-bottom:14px;color:var(--red);}
+
+/* ACTION BAR */
+.action-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;
+  border-top:1px solid var(--bd);padding:10px 24px;
+  display:flex;justify-content:flex-end;gap:10px;z-index:100;}
+.btn{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:var(--red);color:#fff;}
+.btn-primary:hover{background:var(--red-light);}
+.btn-ghost{background:#fff;border:1px solid var(--bd);color:var(--text);}
+.btn-ghost:hover{background:#F5F5F5;}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;
+  justify-content:center;align-items:center;z-index:200;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:14px;padding:32px;max-width:340px;
+  width:90%;box-shadow:0 10px 40px rgba(0,0,0,.2);}
+.modal h3{font-size:18px;margin-bottom:6px;}
+.modal p{color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.5;}
+.modal input{padding:10px;font-size:18px;text-align:center;letter-spacing:6px;
+  margin-bottom:8px;}
+.modal-err{font-size:12px;color:#C00;min-height:18px;margin-bottom:10px;}
+.modal-btns{display:flex;gap:10px;}
+.modal-btns .btn{flex:1;}
+
+/* TOAST */
+.toast{position:fixed;bottom:74px;right:24px;background:#333;color:#fff;
+  padding:10px 18px;border-radius:8px;font-size:13px;z-index:300;
+  opacity:0;transform:translateY(6px);transition:all .25s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* HIDDEN */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* PRINT */
+@media print{
+  header,.tabs,.action-bar,.legend,.mode-area,.sig-bar,.img-remove{display:none!important;}
+  body{background:#fff;}
+  .main{margin:0;padding:0;max-width:100%;}
+  .card{break-inside:avoid;border:1px solid #CCC;}
+  [data-owner] input,[data-owner] textarea,[data-owner] select{
+    background:#fff!important;border:none!important;
+    border-bottom:1px solid #CCC!important;border-radius:0!important;}
+  .img-preview{display:block!important;}
+  .sig-canvas{border:1px solid #DDD;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="logo">紅杉有限公司 <small>合約填寫系統</small></div>
+  <div class="mode-area">
+    <div class="mode-badge kol" id="modeBadge">👤 網紅模式</div>
+    <button class="mode-btn" onclick="openModeModal()">切換模式</button>
+  </div>
+</header>
+
+<!-- ===== TABS ===== -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('labor',this)">📋 勞務報酬單</button>
+  <button class="tab-btn" onclick="switchTab('order',this)">📄 工作委託單</button>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="ld ld-admin"></div>公司填寫</div>
+    <div class="legend-item"><div class="ld ld-kol"></div>網紅填寫</div>
+    <div class="legend-item"><div class="ld ld-fixed"></div>固定內容</div>
+  </div>
+
+  <!-- ==================== 勞務報酬單 ==================== -->
+  <div class="tab-content active" id="tab-labor">
+
+    <div class="card">
+      <div class="card-header">紅杉有限公司　勞務報酬單</div>
+
+      <div class="sec">支領內容摘要</div>
+      <div class="fb">
+
+        <!-- KOL NAME (display) -->
+        <div class="row">
+          <div class="f kol-name-display" style="display:flex;align-items:center;gap:10px;flex:1">
+            <div style="font-size:18px;font-weight:700;min-width:80px" id="labor-name-display">（所得人）</div>
+            <div style="color:var(--muted);font-size:13px">茲證明確認領取下列款項無誤</div>
+          </div>
+        </div>
+
+        <!-- 工作內容 -->
+        <div class="row">
+          <div class="f full" data-owner="admin">
+            <label class="fl">工作內容 <span class="ob ob-a">公司填寫</span></label>
+            <textarea id="l-job" rows="2" placeholder="例：Blog 文章一篇＋FB 圖文一則"></textarea>
+          </div>
+        </div>
+
+        <!-- 應付金額 -->
+        <div class="row">
+          <div class="f half" data-owner="admin">
+            <label class="fl">應付金額 <span class="ob ob-a">公司填寫</span></label>
+            <div class="amt-input-wrap">
+              <span>NT$</span>
+              <input type="number" id="l-amount" placeholder="0" oninput="calcDeductions()" min="0">
+            </div>
+          </div>
+          <div class="f half" data-owner="admin">
+            <label class="fl">所得格式代號 <span class="ob ob-a">公司填寫</span></label>
+            <select id="l-income-type" onchange="calcDeductions()">
+              <option value="9B">9B — 稿費 / 演講鐘點費</option>
+              <option value="9A">9A — 執行業務所得</option>
+              <option value="50">50 — 薪資所得（兼職）</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 代扣 table -->
+        <div class="amt-wrap">
+          <table class="amt-tbl">
+            <thead>
+              <tr>
+                <th style="text-align:left">項目</th>
+                <th>2.11%<br>二代健保扣費</th>
+                <th>5%<br>兼職人員扣稅</th>
+                <th>10%<br>執行業務扣稅</th>
+                <th>實付金額</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="amt-val" id="l-show-amount">NT$0</td>
+                <td><span class="deduct-val" id="l-nhf">—</span></td>
+                <td><span class="deduct-val" id="l-tax5">—</span></td>
+                <td><span class="deduct-val" id="l-tax10">—</span></td>
+                <td><span class="amt-real" id="l-real">NT$0</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 所得格式 display & 支領方式 -->
+        <div class="row">
+          <div class="f half" data-owner="admin">
+            <label class="fl">所得格式代號顯示 <span class="ob ob-a">公司填寫</span></label>
+            <input type="text" id="l-income-label" readonly placeholder="自動帶入" style="cursor:default;">
+          </div>
+          <div class="f half" data-owner="admin">
+            <label class="fl">支領方式 <span class="ob ob-a">公司填寫</span></label>
+            <select id="l-pay-method">
+              <option>銀行轉帳</option>
+              <option>現金</option>
+            </select>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--bd);margin:4px 0 16px;">
+
+        <!-- KOL 個人資料 -->
+        <div class="row">
+          <div class="f half" data-owner="kol">
+            <label class="fl">所得人姓名 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="l-kol-name" placeholder="請填寫真實姓名" oninput="syncName()">
+          </div>
+          <div class="f half" data-owner="kol">
+            <label class="fl">身分證 / 統一編號 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="l-kol-id" placeholder="A123456789">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f full" data-owner="kol">
+            <label class="fl">戶籍地址 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="l-kol-addr1" placeholder="含郵遞區號">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f full" data-owner="kol">
+            <label class="fl">通訊地址 <span class="ob ob-k">網紅填寫</span>（若同戶籍請填「同上」）</label>
+            <input type="text" id="l-kol-addr2" placeholder="含郵遞區號">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f half" data-owner="kol">
+            <label class="fl">聯絡電話 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="tel" id="l-kol-phone" placeholder="0912-345-678">
+          </div>
+          <div class="f half" data-owner="admin">
+            <label class="fl">日期 <span class="ob ob-a">公司填寫</span></label>
+            <input type="date" id="l-date">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f full" data-owner="kol">
+            <label class="fl">銀行帳戶 <span class="ob ob-k">網紅填寫</span>（銀行名稱 / 代碼 / 分行 / 帳號）</label>
+            <input type="text" id="l-kol-bank" placeholder="例：台灣銀行 / 004 / 板橋分行 / 0123456789012">
+          </div>
+        </div>
+      </div>
+
+      <!-- 簽名區 -->
+      <div class="sec">簽名欄</div>
+      <div class="fb">
+        <div class="sign-grid">
+          <div data-owner="admin">
+            <div class="sign-label">經辦人 <span class="ob ob-a" style="text-transform:none;letter-spacing:0">公司填寫</span></div>
+            <div class="sig-wrap">
+              <canvas class="sig-canvas" id="sig-agent" width="360" height="120"></canvas>
+              <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-agent')">清除</button></div>
+            </div>
+          </div>
+          <div data-owner="admin">
+            <div class="sign-label">主管簽名（簽章）<span class="ob ob-a" style="text-transform:none;letter-spacing:0">公司填寫</span></div>
+            <div class="sig-wrap">
+              <canvas class="sig-canvas" id="sig-manager" width="360" height="120"></canvas>
+              <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-manager')">清除</button></div>
+            </div>
+          </div>
+          <div data-owner="kol">
+            <div class="sign-label">所得人簽名（簽章）<span class="ob ob-k" style="text-transform:none;letter-spacing:0">網紅填寫</span></div>
+            <div class="sig-wrap">
+              <canvas class="sig-canvas" id="sig-kol" width="360" height="120"></canvas>
+              <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-kol')">清除</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 上傳證件 -->
+      <div class="sec">附件上傳</div>
+      <div class="fb">
+        <div class="row">
+          <div class="f third" data-owner="kol">
+            <label class="fl">身分證影本－正面 <span class="ob ob-k">網紅填寫</span></label>
+            <div class="img-zone" onclick="triggerUpload('img-id-front')" ondragover="dragOver(event)" ondrop="dropImg(event,'img-id-front')">
+              <input type="file" id="img-id-front" accept="image/*" onchange="previewImg(this,'zone-id-front')">
+              <img class="img-preview" id="prev-id-front">
+              <div class="img-hint"><span class="icon">🪪</span>點擊上傳或拖曳圖片<br>JPG / PNG</div>
+              <button class="img-remove" onclick="removeImg(event,'img-id-front','zone-id-front')">×</button>
+            </div>
+          </div>
+          <div class="f third" data-owner="kol" id="zone-id-front">
+            <label class="fl">身分證影本－反面 <span class="ob ob-k">網紅填寫</span></label>
+            <div class="img-zone" onclick="triggerUpload('img-id-back')" ondragover="dragOver(event)" ondrop="dropImg(event,'img-id-back')">
+              <input type="file" id="img-id-back" accept="image/*" onchange="previewImg(this,'zone-id-back')">
+              <img class="img-preview" id="prev-id-back">
+              <div class="img-hint"><span class="icon">🪪</span>點擊上傳或拖曳圖片<br>JPG / PNG</div>
+              <button class="img-remove" onclick="removeImg(event,'img-id-back','zone-id-back')">×</button>
+            </div>
+          </div>
+          <div class="f third" data-owner="kol" id="zone-id-back">
+            <label class="fl">銀行存摺影本 <span class="ob ob-k">網紅填寫</span></label>
+            <div class="img-zone" onclick="triggerUpload('img-bank')" ondragover="dragOver(event)" ondrop="dropImg(event,'img-bank')">
+              <input type="file" id="img-bank" accept="image/*" onchange="previewImg(this,'zone-bank')">
+              <img class="img-preview" id="prev-bank">
+              <div class="img-hint"><span class="icon">📕</span>點擊上傳或拖曳圖片<br>JPG / PNG</div>
+              <button class="img-remove" onclick="removeImg(event,'img-bank','zone-bank')">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /card labor -->
+  </div><!-- /tab-labor -->
+
+
+  <!-- ==================== 工作委託單 ==================== -->
+  <div class="tab-content" id="tab-order">
+
+    <div class="card">
+      <div class="card-header">紅杉有限公司　工作委託單</div>
+
+      <!-- 一、請款資料 -->
+      <div class="sec">一、請款資料</div>
+      <div class="fb">
+        <div class="row">
+          <div class="f half" data-owner="kol">
+            <label class="fl">姓名 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="o-name" placeholder="真實姓名" oninput="syncName()">
+          </div>
+          <div class="f half" data-owner="kol">
+            <label class="fl">粉絲團名稱 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="o-fanpage" placeholder="FB 粉絲專頁 / IG / 部落格名稱">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f full" data-owner="kol">
+            <label class="fl">身分證字號 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="o-id" placeholder="A123456789">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f full" data-owner="kol">
+            <label class="fl">戶籍地址 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="o-addr" placeholder="含郵遞區號">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f half" data-owner="kol">
+            <label class="fl">電子信箱 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="email" id="o-email" placeholder="yourname@email.com">
+          </div>
+          <div class="f half" data-owner="kol">
+            <label class="fl">聯絡人手機 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="tel" id="o-phone" placeholder="0912-345-678">
+          </div>
+        </div>
+      </div>
+
+      <!-- 二、委託內容 -->
+      <div class="sec">二、委託內容</div>
+      <div class="fb">
+        <div class="row">
+          <div class="f half" data-owner="admin">
+            <label class="fl">簽署日期 <span class="ob ob-a">公司填寫</span></label>
+            <input type="date" id="o-sign-date">
+          </div>
+          <div class="f half" data-owner="admin">
+            <label class="fl">合作開始日期 <span class="ob ob-a">公司填寫</span></label>
+            <input type="date" id="o-start-date">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f third" data-owner="admin">
+            <label class="fl">審核日期 <span class="ob ob-a">公司填寫</span></label>
+            <input type="text" id="o-review-date" placeholder="審稿完畢後">
+          </div>
+          <div class="f third" data-owner="admin">
+            <label class="fl">刊登日期 <span class="ob ob-a">公司填寫</span></label>
+            <input type="text" id="o-publish-date" placeholder="例：2026/05/10">
+          </div>
+          <div class="f third" data-owner="admin">
+            <label class="fl">費用總計 <span class="ob ob-a">公司填寫</span></label>
+            <div class="amt-input-wrap">
+              <span>NT$</span>
+              <input type="number" id="o-fee" placeholder="0" min="0">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="f half" data-owner="admin">
+            <label class="fl">營業稅 5% <span class="ob ob-a">公司填寫</span></label>
+            <div class="radio-group" style="padding:8px 0;display:flex;gap:18px;align-items:center;">
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px;font-weight:400;color:var(--text);text-transform:none;letter-spacing:0">
+                <input type="radio" name="o-tax" value="included" style="width:auto"> 內含</label>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px;font-weight:400;color:var(--text);text-transform:none;letter-spacing:0">
+                <input type="radio" name="o-tax" value="extra" style="width:auto"> 外加</label>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px;font-weight:400;color:var(--text);text-transform:none;letter-spacing:0">
+                <input type="radio" name="o-tax" value="none" checked style="width:auto"> 無</label>
+            </div>
+          </div>
+          <div class="f half" data-owner="admin">
+            <label class="fl">付款條件 <span class="ob ob-a">公司填寫</span></label>
+            <input type="text" id="o-payment" value="勞務報酬單，發文後隔月 10 號匯款">
+          </div>
+        </div>
+      </div>
+
+      <!-- 三、其他備註 -->
+      <div class="sec">三、其他備註</div>
+      <div class="fb">
+        <div class="row">
+          <div class="f full" data-owner="admin">
+            <label class="fl">合作產品 <span class="ob ob-a">公司填寫</span></label>
+            <input type="text" id="o-product" placeholder="請填寫合作產品名稱">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f full" data-owner="admin">
+            <label class="fl">合作內容 <span class="ob ob-a">公司填寫</span></label>
+            <textarea id="o-content" rows="4" placeholder="例：● 廣告主授權 6 個月&#10;● 素材授權&#10;● 審文次數：2 次以內">● 廣告主授權 6 個月
+● 素材授權
+● 審文次數：2 次以內</textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 四、注意事項 -->
+      <div class="sec">四、注意事項</div>
+      <div class="fb">
+        <div class="fixed-block">
+          <p>※ 刊出前，需於雙方同意訂定的時間內提供初稿給予甲方審文，並於 3 日內提供修正過後的稿件，確認無誤方可發文。團購純分潤合作不在此限。</p>
+          <p>※ 審文重點：錯別字、產品資訊特色正確、埋入指定連結（禁止改成其他聯盟網連結）。</p>
+          <p>※ 乙方於刊出後提供刊登連結，刊登後不可刪除或任意修改。</p>
+          <p>※ 刊登後之貼文甲方可以連結方式分享。</p>
+          <p>※ 乙方素材授權給甲方推廣使用。</p>
+          <p>※ 非不可抗力因素，不可拖稿，如需調整時間務必盡早通知以便我們調整。</p>
+          <p>※ 稿酬由銀行轉帳，轉帳產生的手續費由乙方負擔。</p>
+          <br>
+          <p>乙方同意甲方及甲方合作廠商得使用乙方之公司名稱、姓名、筆名及肖像，於甲方或甲方合作廠商之網站、出版品、電子及平面宣傳品，用以介紹或宣傳甲方服務或相關活動內容。</p>
+          <p>乙方擔保其依本委託單所為甲方創作、撰寫、編輯完成之著作物，係由其自行創作、撰寫及編輯，絕無任何違反法令或侵害第三人智慧財產權或其他權益之情事。如有違反，除應由乙方自負法律責任外，如甲方、甲方負責人或甲方員工因該等著作或資料而受第三人主張權利或提起訴訟、或受相關主管機關調查、追訴或處分時，對於甲方、甲方負責人或甲方員工因此所受之損害及因此所支出之費用，乙方應負損害賠償之責任。</p>
+          <p>乙方擁有創作、撰寫、編輯完成之著作物之著作財產權，但甲方基於簽署本約及交付費用為對價而取得作品之合約得以轉發原文並充分利用之。在不影響乙方語意的情況下，針對文字的順序、連結擺放的位置、素材順序加以潤飾調整。</p>
+          <p>乙方保有著作人格權，但授權給甲方使用，甲方撰寫之著作物中含有乙方肖像時，乙方同意不得向甲方、甲方負責人及甲方員工主張肖像權。</p>
+          <p>乙方承諾未經甲方書面同意，不得擅自將自甲方知悉或取得關於甲方服務、產品或活動之任何訊息、未對外公開之資料及營業秘密提供或洩漏予任何第三人知悉或於本委託單目的以外使用。如違反造成甲方、甲方負責人、甲方員工或甲方合作客戶之損害，乙方須負擔賠償責任。</p>
+          <p>雙方不因本合約而有合夥、互為代理或僱傭之關係。</p>
+          <p>本委託單如有未盡事宜，應依中華民國法令解釋或補充之；雙方因本委託單之履行或不履行而涉訟時，以臺灣臺北地方法院為第一審管轄法院。</p>
+          <p>本委託單於雙方簽署時生效；本委託單正本壹式貳份，由雙方各執乙份為憑。</p>
+        </div>
+      </div>
+
+      <!-- 五、立約人 -->
+      <div class="sec">五、立約人</div>
+      <div class="fb">
+        <div class="party-grid">
+          <!-- 甲方 fixed -->
+          <div class="party-col" data-owner="fixed">
+            <div class="party-title">甲方：紅杉有限公司</div>
+            <div class="row" style="flex-direction:column;gap:10px;">
+              <div class="f full">
+                <label class="fl">代表人</label>
+                <input type="text" value="曾淑華" readonly>
+              </div>
+              <div class="f full">
+                <label class="fl">統一編號</label>
+                <input type="text" value="80616921" readonly>
+              </div>
+              <div class="f full">
+                <label class="fl">地址</label>
+                <input type="text" value="新北市新店區寶高路7巷4號" readonly>
+              </div>
+              <div class="f full">
+                <label class="fl">電話</label>
+                <input type="text" value="02-2915-2307" readonly>
+              </div>
+            </div>
+            <div style="margin-top:14px">
+              <div class="sign-label" style="text-align:left;margin-bottom:6px">代表人簽章</div>
+              <div class="sig-wrap" data-owner="admin">
+                <canvas class="sig-canvas" id="sig-company" width="340" height="100"></canvas>
+                <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-company')">清除</button></div>
+              </div>
+            </div>
+          </div>
+          <!-- 乙方 KOL -->
+          <div class="party-col">
+            <div class="party-title">乙方：<span id="o-party-name" style="font-weight:400">（網紅姓名）</span></div>
+            <div class="row" style="flex-direction:column;gap:10px;">
+              <div class="f full" data-owner="kol">
+                <label class="fl">代表人姓名 <span class="ob ob-k">網紅填寫</span></label>
+                <input type="text" id="o-kol-name" placeholder="姓名" oninput="syncName()">
+              </div>
+              <div class="f full" data-owner="kol">
+                <label class="fl">統一編號 / 身分證字號 <span class="ob ob-k">網紅填寫</span></label>
+                <input type="text" id="o-kol-id" placeholder="A123456789">
+              </div>
+              <div class="f full" data-owner="kol">
+                <label class="fl">地址 <span class="ob ob-k">網紅填寫</span></label>
+                <input type="text" id="o-kol-addr" placeholder="含郵遞區號">
+              </div>
+              <div class="f full" data-owner="kol">
+                <label class="fl">電話 <span class="ob ob-k">網紅填寫</span></label>
+                <input type="tel" id="o-kol-phone" placeholder="0912-345-678">
+              </div>
+            </div>
+            <div style="margin-top:14px">
+              <div class="sign-label" style="text-align:left;margin-bottom:6px">乙方簽章</div>
+              <div class="sig-wrap" data-owner="kol">
+                <canvas class="sig-canvas" id="sig-kol2" width="340" height="100"></canvas>
+                <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-kol2')">清除</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /card order -->
+  </div><!-- /tab-order -->
+
+</div><!-- /main -->
+
+<!-- ACTION BAR -->
+<div class="action-bar">
+  <button class="btn btn-ghost" onclick="clearAll()">🗑 清除表單</button>
+  <button class="btn btn-ghost" onclick="window.print()">🖨 列印 / 匯出 PDF</button>
+  <button class="btn btn-primary" onclick="saveAll()">💾 儲存</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODE MODAL -->
+<div class="overlay" id="overlay" onclick="closeOverlay(event)">
+  <div class="modal">
+    <h3 id="modal-title">🔑 切換為管理員模式</h3>
+    <p id="modal-desc">請輸入管理員密碼，切換後可填寫公司欄位。</p>
+    <input type="password" id="pin-input" class="modal-input" placeholder="••••" maxlength="20" onkeydown="if(event.key==='Enter')checkPin()">
+    <div class="modal-err" id="pin-err"></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="checkPin()">確認</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 設定 ──────────────────────────────────────────────
+const ADMIN_PIN = '1101'; // ← 可在此修改管理員密碼
+
+// ── 狀態 ─────────────────────────────────────────────
+let currentMode = 'kol'; // 'kol' | 'admin'
+const sigStates = {}; // 追蹤每個畫布是否可繪
+
+// ── 分頁切換 ─────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── 模式切換 ─────────────────────────────────────────
+function openModeModal() {
+  const modal = document.getElementById('overlay');
+  const title = document.getElementById('modal-title');
+  const desc  = document.getElementById('modal-desc');
+  const err   = document.getElementById('pin-err');
+  const inp   = document.getElementById('pin-input');
+  err.textContent = '';
+  inp.value = '';
+  if (currentMode === 'kol') {
+    title.textContent = '🔑 切換為管理員模式';
+    desc.textContent  = '請輸入管理員密碼，切換後可填寫公司欄位。';
+  } else {
+    title.textContent = '👤 切換為網紅模式';
+    desc.textContent  = '切換後公司欄位將鎖定，方便傳給網紅填寫。';
+  }
+  modal.classList.add('show');
+  setTimeout(() => inp.focus(), 100);
+}
+
+function checkPin() {
+  const inp = document.getElementById('pin-input');
+  const err = document.getElementById('pin-err');
+  if (currentMode === 'kol') {
+    if (inp.value === ADMIN_PIN) {
+      currentMode = 'admin';
+      closeModal();
+      updateMode();
+      toast('已切換為管理員模式');
+    } else {
+      err.textContent = '密碼錯誤，請重試。';
+      inp.value = '';
+      inp.focus();
+    }
+  } else {
+    // 任意確認即可切換回網紅模式（不需密碼）
+    currentMode = 'kol';
+    closeModal();
+    updateMode();
+    toast('已切換為網紅模式');
+  }
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('show');
+}
+function closeOverlay(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+function updateMode() {
+  const badge = document.getElementById('modeBadge');
+  if (currentMode === 'admin') {
+    badge.textContent = '🏢 管理員模式';
+    badge.className = 'mode-badge admin';
+  } else {
+    badge.textContent = '👤 網紅模式';
+    badge.className = 'mode-badge kol';
+  }
+  // 更新欄位鎖定狀態
+  document.querySelectorAll('[data-owner]').forEach(field => {
+    const owner = field.dataset.owner;
+    if (owner === 'fixed') return;
+    const isLocked = (owner !== currentMode);
+    field.classList.toggle('locked', isLocked);
+    field.querySelectorAll('input,textarea,select').forEach(el => {
+      el.disabled = isLocked;
+    });
+  });
+  // 畫布
+  updateSigStates();
+}
+
+// ── 簽名畫布 ─────────────────────────────────────────
+function initSig(id, owner) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#1A1A1A';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  let drawing = false;
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return [src.clientX - r.left, src.clientY - r.top];
+  }
+  function canDraw() {
+    if (owner === 'fixed') return false;
+    return owner === currentMode;
+  }
+
+  canvas.addEventListener('mousedown',  e => { if (!canDraw()) return; drawing = true; ctx.beginPath(); const [x,y] = getPos(e); ctx.moveTo(x,y); });
+  canvas.addEventListener('mousemove',  e => { if (!drawing || !canDraw()) return; const [x,y] = getPos(e); ctx.lineTo(x,y); ctx.stroke(); });
+  canvas.addEventListener('mouseup',    () => drawing = false);
+  canvas.addEventListener('mouseleave', () => drawing = false);
+  canvas.addEventListener('touchstart', e => { if (!canDraw()) return; e.preventDefault(); drawing = true; ctx.beginPath(); const [x,y] = getPos(e); ctx.moveTo(x,y); }, {passive:false});
+  canvas.addEventListener('touchmove',  e => { if (!drawing || !canDraw()) return; e.preventDefault(); const [x,y] = getPos(e); ctx.lineTo(x,y); ctx.stroke(); }, {passive:false});
+  canvas.addEventListener('touchend',   () => drawing = false);
+
+  sigStates[id] = { ctx, owner };
+}
+
+function updateSigStates() {
+  document.querySelectorAll('.sig-canvas').forEach(c => {
+    const owner = c.closest('[data-owner]')?.dataset.owner;
+    const locked = owner && owner !== 'fixed' && owner !== currentMode;
+    c.style.cursor = locked ? 'not-allowed' : 'crosshair';
+    c.style.opacity = locked ? '.5' : '1';
+  });
+}
+
+function clearSig(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// ── 計算扣款 ─────────────────────────────────────────
+function calcDeductions() {
+  const amt     = parseFloat(document.getElementById('l-amount').value) || 0;
+  const type    = document.getElementById('l-income-type').value;
+  let nhf = 0, tax = 0;
+
+  // 二代健保：所有類型單次 ≥20,000 扣 2.11%
+  if (amt >= 20000) nhf = Math.round(amt * 0.0211);
+
+  // 所得稅
+  if (type === '50') {
+    // 薪資所得（兼職）：單次 >88,501 才扣 5%
+    if (amt > 88501) tax = Math.round(amt * 0.05);
+  } else {
+    // 執行業務 / 稿費（9A/9B）：單次 ≥20,001 才扣 10%
+    if (amt >= 20001) tax = Math.round(amt * 0.10);
+  }
+
+  const real = amt - nhf - tax;
+  const fmt  = v => v > 0 ? `-NT$${v.toLocaleString()}` : '—';
+
+  document.getElementById('l-show-amount').textContent = `NT$${amt.toLocaleString()}`;
+  document.getElementById('l-nhf').textContent   = nhf > 0 ? fmt(nhf) : '—';
+  document.getElementById('l-tax5').textContent  = (type === '50' && tax > 0) ? fmt(tax) : '—';
+  document.getElementById('l-tax10').textContent = (type !== '50' && tax > 0) ? fmt(tax) : '—';
+  document.getElementById('l-real').textContent  = `NT$${real.toLocaleString()}`;
+
+  const labels = { '9A':'9A（執行業務）', '9B':'9B（稿費）', '50':'50（薪資兼職）' };
+  document.getElementById('l-income-label').value = `${labels[type]} ／ NT$${amt.toLocaleString()}`;
+}
+
+// ── 同步姓名 ─────────────────────────────────────────
+function syncName() {
+  const name = document.getElementById('l-kol-name')?.value
+             || document.getElementById('o-name')?.value
+             || document.getElementById('o-kol-name')?.value
+             || '';
+  const display = document.getElementById('labor-name-display');
+  const party   = document.getElementById('o-party-name');
+  if (display) display.textContent = name || '（所得人）';
+  if (party)   party.textContent   = name || '（網紅姓名）';
+}
+
+// ── 圖片上傳 ─────────────────────────────────────────
+function triggerUpload(id) {
+  document.getElementById(id).click();
+}
+function previewImg(input, zoneId) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  const prevId = 'prev-' + input.id.replace('img-','');
+  reader.onload = e => {
+    const img  = document.getElementById(prevId);
+    const zone = input.closest('.img-zone');
+    if (img)  { img.src = e.target.result; }
+    if (zone) zone.classList.add('has-img');
+  };
+  reader.readAsDataURL(file);
+}
+function removeImg(e, inputId, zoneId) {
+  e.stopPropagation();
+  const input = document.getElementById(inputId);
+  const zone  = input?.closest('.img-zone');
+  const prevId = 'prev-' + inputId.replace('img-','');
+  const img   = document.getElementById(prevId);
+  if (input) input.value = '';
+  if (img)   img.src = '';
+  if (zone)  zone.classList.remove('has-img');
+}
+function dragOver(e) { e.preventDefault(); }
+function dropImg(e, inputId) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const input = document.getElementById(inputId);
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  input.files = dt.files;
+  previewImg(input);
+}
+
+// ── 儲存 / 載入 ─────────────────────────────────────
+function saveAll() {
+  const data = {};
+  document.querySelectorAll('input[id],textarea[id],select[id]').forEach(el => {
+    if (el.type === 'radio') return;
+    data[el.id] = el.value;
+  });
+  // radio
+  const taxRadio = document.querySelector('input[name="o-tax"]:checked');
+  if (taxRadio) data['o-tax'] = taxRadio.value;
+  localStorage.setItem('hs_form', JSON.stringify(data));
+  toast('已儲存 ✓');
+}
+
+function loadAll() {
+  const raw = localStorage.getItem('hs_form');
+  if (!raw) return;
+  const data = JSON.parse(raw);
+  Object.entries(data).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = val;
+  });
+  if (data['o-tax']) {
+    const r = document.querySelector(`input[name="o-tax"][value="${data['o-tax']}"]`);
+    if (r) r.checked = true;
+  }
+  calcDeductions();
+  syncName();
+  toast('已載入上次儲存的內容');
+}
+
+function clearAll() {
+  if (!confirm('確定要清除所有填寫內容嗎？')) return;
+  document.querySelectorAll('input[id],textarea[id],select[id]').forEach(el => {
+    if (el.type === 'radio') return;
+    if (el.closest('[data-owner="fixed"]')) return;
+    if (el.dataset.readonly === 'true') return;
+    el.value = '';
+  });
+  document.querySelectorAll('.sig-canvas').forEach(c => {
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0,0,c.width,c.height);
+  });
+  document.querySelectorAll('.img-zone').forEach(z => z.classList.remove('has-img'));
+  document.querySelectorAll('.img-preview').forEach(i => i.src = '');
+  const def = document.querySelector('input[name="o-tax"][value="none"]');
+  if (def) def.checked = true;
+  document.getElementById('o-content').value = '● 廣告主授權 6 個月\n● 素材授權\n● 審文次數：2 次以內';
+  localStorage.removeItem('hs_form');
+  calcDeductions();
+  syncName();
+  toast('表單已清除');
+}
+
+// ── TOAST ────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ── 初始化 ────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  // 初始化所有簽名畫布
+  ['sig-agent','sig-manager','sig-kol','sig-company','sig-kol2'].forEach(id => {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const owner = canvas.closest('[data-owner]')?.dataset.owner;
+    initSig(id, owner);
+  });
+
+  // 預設網紅模式：鎖定 admin 欄位
+  updateMode();
+
+  // 載入暫存
+  if (localStorage.getItem('hs_form')) {
+    if (confirm('找到上次儲存的內容，是否載入？')) loadAll();
+  }
+
+  // 初始計算
+  calcDeductions();
+});
+</script>
+</body>
+</html>
