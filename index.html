@@ -196,6 +196,12 @@ textarea{resize:vertical;min-height:72px;}
 .tab-content{display:none;}
 .tab-content.active{display:block;}
 
+/* VALIDATION ERROR */
+.field-err input,.field-err textarea,.field-err select{
+  border-color:#E8493F!important;box-shadow:0 0 0 2px rgba(232,73,63,.15)!important;}
+.field-err canvas{outline:2px solid #E8493F;border-radius:6px;}
+.field-err-msg{font-size:11px;color:#E8493F;margin-top:3px;}
+
 /* PRINT */
 @media print{
   header,.tabs,.action-bar,.legend,.mode-area,.sig-bar,.img-remove{display:none!important;}
@@ -223,8 +229,8 @@ textarea{resize:vertical;min-height:72px;}
 
 <!-- ===== TABS ===== -->
 <div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('labor',this)">📋 勞務報酬單</button>
-  <button class="tab-btn" onclick="switchTab('order',this)">📄 工作委託單</button>
+  <button class="tab-btn active" onclick="switchTab('order',this)">📄 工作委託單</button>
+  <button class="tab-btn" onclick="switchTab('labor',this)">📋 勞務報酬單</button>
 </div>
 
 <!-- ===== MAIN ===== -->
@@ -238,7 +244,7 @@ textarea{resize:vertical;min-height:72px;}
   </div>
 
   <!-- ==================== 勞務報酬單 ==================== -->
-  <div class="tab-content active" id="tab-labor">
+  <div class="tab-content" id="tab-labor">
 
     <div class="card">
       <div class="card-header">紅杉有限公司　勞務報酬單</div>
@@ -430,7 +436,7 @@ textarea{resize:vertical;min-height:72px;}
 
 
   <!-- ==================== 工作委託單 ==================== -->
-  <div class="tab-content" id="tab-order">
+  <div class="tab-content active" id="tab-order">
 
     <div class="card">
       <div class="card-header">紅杉有限公司　工作委託單</div>
@@ -636,7 +642,7 @@ textarea{resize:vertical;min-height:72px;}
 <!-- ACTION BAR -->
 <div class="action-bar">
   <button class="btn btn-ghost" onclick="clearAll()">🗑 清除表單</button>
-  <button class="btn btn-ghost" onclick="window.print()">🖨 列印 / 匯出 PDF</button>
+  <button class="btn btn-ghost" onclick="handlePrint()">🖨 列印 / 匯出 PDF</button>
   <button class="btn btn-primary" onclick="saveAll()">💾 儲存</button>
 </div>
 
@@ -666,6 +672,90 @@ let currentMode = 'kol'; // 'kol' | 'admin'
 const sigStates = {}; // 追蹤每個畫布是否可繪
 
 // ── 分頁切換 ─────────────────────────────────────────
+// ── KOL 必填防呆 ─────────────────────────────────────
+const KOL_REQUIRED = [
+  { id:'o-name',      label:'真實姓名',     tab:'order' },
+  { id:'o-id',        label:'身分證字號',   tab:'order' },
+  { id:'o-addr',      label:'戶籍地址',     tab:'order' },
+  { id:'o-email',     label:'電子信箱',     tab:'order' },
+  { id:'o-phone',     label:'聯絡電話',     tab:'order' },
+  { id:'o-kol-name',  label:'立約人姓名',   tab:'order' },
+  { id:'o-kol-id',    label:'立約人身分證', tab:'order' },
+  { id:'o-kol-addr',  label:'立約人地址',   tab:'order' },
+  { id:'o-kol-phone', label:'立約人電話',   tab:'order' },
+  { id:'sig-kol2',    label:'乙方簽名',     tab:'order', type:'canvas' },
+  { id:'l-kol-name',  label:'所得人姓名',   tab:'labor' },
+  { id:'l-kol-id',    label:'身分證號碼',   tab:'labor' },
+  { id:'l-kol-addr1', label:'戶籍地址',     tab:'labor' },
+  { id:'l-kol-phone', label:'聯絡電話',     tab:'labor' },
+  { id:'l-kol-bank',  label:'銀行帳戶',     tab:'labor' },
+  { id:'sig-kol',     label:'所得人簽名',   tab:'labor', type:'canvas' },
+];
+
+function canvasEmpty(id) {
+  const c = document.getElementById(id);
+  if (!c) return true;
+  const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+  for (let i = 3; i < d.length; i += 4) { if (d[i] > 10) return false; }
+  return true;
+}
+
+function clearFieldErrors() {
+  document.querySelectorAll('.field-err').forEach(el => {
+    el.classList.remove('field-err');
+    el.querySelector('.field-err-msg')?.remove();
+  });
+}
+
+function validateKol() {
+  clearFieldErrors();
+  const missing = [];
+  let firstTab = null;
+
+  KOL_REQUIRED.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (!el) return;
+    const empty = f.type === 'canvas' ? canvasEmpty(f.id)
+                                      : !el.value.trim();
+    if (empty) {
+      missing.push(f.label);
+      if (!firstTab) firstTab = f.tab;
+      const wrap = el.closest('.f, [data-owner]');
+      if (wrap) {
+        wrap.classList.add('field-err');
+        if (!wrap.querySelector('.field-err-msg')) {
+          const msg = document.createElement('div');
+          msg.className = 'field-err-msg';
+          msg.textContent = '此欄位為必填';
+          wrap.appendChild(msg);
+        }
+        const evt = f.type === 'canvas' ? 'pointerdown' : 'input';
+        el.addEventListener(evt, () => {
+          wrap.classList.remove('field-err');
+          wrap.querySelector('.field-err-msg')?.remove();
+        }, { once: true });
+      }
+    }
+  });
+
+  if (missing.length) {
+    const tabBtn = document.querySelector(`.tab-btn[onclick*="${firstTab}"]`);
+    if (tabBtn) tabBtn.click();
+    showToast(`尚有 ${missing.length} 個必填欄位未完成`);
+    setTimeout(() => {
+      const firstErr = document.querySelector('.field-err input, .field-err canvas');
+      firstErr?.scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 200);
+    return false;
+  }
+  return true;
+}
+
+function handlePrint() {
+  if (!validateKol()) return;
+  window.print();
+}
+
 function switchTab(id, btn) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
