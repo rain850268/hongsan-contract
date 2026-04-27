@@ -456,10 +456,10 @@ textarea:-webkit-autofill,select:-webkit-autofill{
       </div>
 
       <!-- 上傳證件 -->
-      <div class="sec sec-pg-break">附件上傳</div>
+      <div class="sec sec-no-break">附件上傳</div>
       <div class="fb">
         <div class="row">
-          <div class="f full" data-owner="kol" id="zone-id-front">
+          <div class="f half" data-owner="kol" id="zone-id-front">
             <label class="fl">身分證影本－正面 <span class="ob ob-k">網紅填寫</span></label>
             <div class="img-zone" onclick="triggerUpload('img-id-front')" ondragover="dragOver(event)" ondrop="dropImg(event,'img-id-front')">
               <input type="file" id="img-id-front" accept="image/*" onchange="previewImg(this,'zone-id-front')">
@@ -468,9 +468,7 @@ textarea:-webkit-autofill,select:-webkit-autofill{
               <button class="img-remove" onclick="removeImg(event,'img-id-front','zone-id-front')">×</button>
             </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="f full" data-owner="kol" id="zone-id-back">
+          <div class="f half" data-owner="kol" id="zone-id-back">
             <label class="fl">身分證影本－反面 <span class="ob ob-k">網紅填寫</span></label>
             <div class="img-zone" onclick="triggerUpload('img-id-back')" ondragover="dragOver(event)" ondrop="dropImg(event,'img-id-back')">
               <input type="file" id="img-id-back" accept="image/*" onchange="previewImg(this,'zone-id-back')">
