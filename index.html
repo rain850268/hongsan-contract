@@ -8,7 +8,7 @@
 :root {
   --red:#E8493F; --red-light:#EC6058;
   --admin-bg:#EEF4FB; --admin-bd:#7AACDB;
-  --kol-bg:#EEF8EF; --kol-bd:#6BB97A;
+  --kol-bg:#FEF0EF; --kol-bd:#E8B4B0;
   --bd:#D8D8D8; --text:#1A1A1A; --muted:#777;
   --locked-bg:#F5F5F5; --locked-text:#BBBBBB;
 }
@@ -72,7 +72,7 @@ label.fl{display:block;font-size:12px;font-weight:600;color:var(--muted);
 .ob{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;
   margin-left:4px;font-weight:500;letter-spacing:0;vertical-align:1px;}
 .ob-a{background:#DDE9F8;color:#2B6CB0;}
-.ob-k{background:#D8EDDA;color:#276231;}
+.ob-k{background:#FAD8D6;color:#9C1C14;}
 
 input,textarea,select{width:100%;padding:9px 12px;border:1px solid var(--bd);
   border-radius:6px;font-size:14px;font-family:inherit;color:var(--text);
@@ -89,7 +89,7 @@ textarea{resize:vertical;min-height:72px;}
 [data-owner="kol"] input,[data-owner="kol"] textarea,[data-owner="kol"] select{
   background:var(--kol-bg);border-color:var(--kol-bd);}
 [data-owner="kol"] input:focus,[data-owner="kol"] textarea:focus,[data-owner="kol"] select:focus{
-  border-color:#3A8C4F;}
+  border-color:#E8493F;}
 
 /* LOCKED */
 [data-owner].locked input,[data-owner].locked textarea,[data-owner].locked select,
@@ -374,8 +374,8 @@ textarea{resize:vertical;min-height:72px;}
             <label class="fl">銀行名稱 <span class="ob ob-k">網紅填寫</span></label>
             <input type="text" id="l-bank-name" placeholder="例：台灣銀行">
           </div>
-          <div class="f" style="flex:0 0 80px;min-width:70px" data-owner="kol">
-            <label class="fl">代碼</label>
+          <div class="f" style="flex:0 0 110px;min-width:90px" data-owner="kol">
+            <label class="fl">銀行代碼 <span class="ob ob-k">網紅填寫</span></label>
             <input type="text" id="l-bank-code" placeholder="004" maxlength="6">
           </div>
         </div>
@@ -520,7 +520,7 @@ textarea{resize:vertical;min-height:72px;}
         <div class="row">
           <div class="f third" data-owner="admin">
             <label class="fl">審核日期 <span class="ob ob-a">公司填寫</span></label>
-            <input type="text" id="o-review-date" placeholder="審稿完畢後">
+            <input type="date" id="o-review-date">
           </div>
           <div class="f third" data-owner="admin">
             <label class="fl">刊登日期 <span class="ob ob-a">公司填寫</span></label>
