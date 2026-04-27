@@ -7,14 +7,14 @@
 <style>
 :root {
   --red:#E8493F; --red-light:#EC6058;
-  --admin-bg:#FDEAE9; --admin-bd:#E8493F;
-  --kol-bg:#F5EDE8; --kol-bd:#8B5240;
-  --bd:#DDDDDD; --text:#333; --muted:#888;
+  --admin-bg:#EEF4FB; --admin-bd:#7AACDB;
+  --kol-bg:#EEF8EF; --kol-bd:#6BB97A;
+  --bd:#D8D8D8; --text:#1A1A1A; --muted:#777;
   --locked-bg:#F5F5F5; --locked-text:#BBBBBB;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;
-  background:#FCEADF;color:var(--text);font-size:14px;}
+  background:#F2F2F2;color:var(--text);font-size:15px;}
 
 /* HEADER */
 header{background:var(--red);color:#fff;padding:12px 24px;
@@ -24,20 +24,20 @@ header{background:var(--red);color:#fff;padding:12px 24px;
 .mode-area{display:flex;align-items:center;gap:10px;}
 .mode-badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;}
 .mode-badge.kol{background:rgba(255,255,255,.18);color:#fff;}
-.mode-badge.admin{background:#FCEADF;color:#482622;}
+.mode-badge.admin{background:#F0F0F0;color:#333;}
 .mode-btn{padding:6px 14px;border:1px solid rgba(255,255,255,.5);background:transparent;
   color:#fff;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;}
 .mode-btn:hover{background:rgba(255,255,255,.15);}
 
 /* TABS */
-.tabs{display:flex;background:#fff;border-bottom:2px solid #E8D4CC;padding:0 24px;}
-.tab-btn{padding:14px 22px;border:none;background:none;cursor:pointer;font-size:14px;
+.tabs{display:flex;background:#fff;border-bottom:2px solid #D8D8D8;padding:0 24px;}
+.tab-btn{padding:14px 22px;border:none;background:none;cursor:pointer;font-size:15px;
   font-weight:500;color:var(--muted);border-bottom:3px solid transparent;
   margin-bottom:-2px;transition:all .2s;}
 .tab-btn.active{color:var(--red);border-bottom-color:var(--red);font-weight:700;}
 
 /* MAIN */
-.main{max-width:860px;margin:24px auto;padding:0 16px 80px;}
+.main{max-width:800px;margin:20px auto;padding:0 12px 80px;}
 
 /* LEGEND */
 .legend{display:flex;gap:16px;margin-bottom:16px;font-size:12px;
@@ -49,15 +49,15 @@ header{background:var(--red);color:#fff;padding:12px 24px;
 .ld-fixed{background:#F5F5F5;border:1px solid #C4B5AF;}
 
 /* CARD */
-.card{background:#fff;border:1px solid #E8D4CC;border-radius:12px;
+.card{background:#fff;border:1px solid #D8D8D8;border-radius:10px;
   margin-bottom:16px;overflow:hidden;}
-.card-header{background:#F8EDE9;padding:11px 20px;font-weight:700;font-size:14px;
-  border-bottom:1px solid #E8D4CC;color:var(--red);}
+.card-header{background:#F5F5F5;padding:11px 20px;font-weight:700;font-size:15px;
+  border-bottom:1px solid #D8D8D8;color:#1A1A1A;}
 
 /* SECTION DIVIDER */
-.sec{background:#F0E0D8;padding:9px 20px;font-weight:700;font-size:12px;
-  color:#482622;border-top:1px solid #E0C8BF;border-bottom:1px solid #E0C8BF;
-  text-transform:uppercase;letter-spacing:.5px;}
+.sec{background:#EEEEEE;padding:8px 20px;font-weight:700;font-size:12px;
+  color:#555;border-top:1px solid #D8D8D8;border-bottom:1px solid #D8D8D8;
+  letter-spacing:.3px;}
 
 /* FORM */
 .fb{padding:20px;}
@@ -67,15 +67,15 @@ header{background:var(--red);color:#fff;padding:12px 24px;
 .f.half{flex:0 0 calc(50% - 7px);min-width:180px;}
 .f.third{flex:0 0 calc(33.33% - 10px);min-width:140px;}
 
-label.fl{display:block;font-size:11px;font-weight:600;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;}
-.ob{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;
-  margin-left:4px;font-weight:500;text-transform:none;letter-spacing:0;vertical-align:1px;}
-.ob-a{background:#FAD8D6;color:#9C1C14;}
-.ob-k{background:#EDE3DF;color:#5C3D36;}
+label.fl{display:block;font-size:12px;font-weight:600;color:var(--muted);
+  letter-spacing:.3px;margin-bottom:5px;}
+.ob{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;
+  margin-left:4px;font-weight:500;letter-spacing:0;vertical-align:1px;}
+.ob-a{background:#DDE9F8;color:#2B6CB0;}
+.ob-k{background:#D8EDDA;color:#276231;}
 
-input,textarea,select{width:100%;padding:8px 11px;border:1px solid var(--bd);
-  border-radius:6px;font-size:13px;font-family:inherit;color:var(--text);
+input,textarea,select{width:100%;padding:9px 12px;border:1px solid var(--bd);
+  border-radius:6px;font-size:14px;font-family:inherit;color:var(--text);
   transition:border-color .15s,background .15s;}
 input:focus,textarea:focus,select:focus{outline:none;border-color:#888;}
 textarea{resize:vertical;min-height:72px;}
@@ -84,12 +84,12 @@ textarea{resize:vertical;min-height:72px;}
 [data-owner="admin"] input,[data-owner="admin"] textarea,[data-owner="admin"] select{
   background:var(--admin-bg);border-color:var(--admin-bd);}
 [data-owner="admin"] input:focus,[data-owner="admin"] textarea:focus,[data-owner="admin"] select:focus{
-  border-color:#C93028;}
+  border-color:#3A7FC1;}
 
 [data-owner="kol"] input,[data-owner="kol"] textarea,[data-owner="kol"] select{
   background:var(--kol-bg);border-color:var(--kol-bd);}
 [data-owner="kol"] input:focus,[data-owner="kol"] textarea:focus,[data-owner="kol"] select:focus{
-  border-color:#482622;}
+  border-color:#3A8C4F;}
 
 /* LOCKED */
 [data-owner].locked input,[data-owner].locked textarea,[data-owner].locked select,
@@ -104,8 +104,8 @@ textarea{resize:vertical;min-height:72px;}
 
 /* AMOUNT TABLE */
 .amt-wrap{overflow-x:auto;margin:12px 0;}
-.amt-tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:560px;}
-.amt-tbl th{background:#F0E0D8;padding:8px 10px;text-align:center;font-size:11px;
+.amt-tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:560px;}
+.amt-tbl th{background:#EEEEEE;padding:8px 10px;text-align:center;font-size:12px;
   font-weight:600;border:1px solid var(--bd);}
 .amt-tbl td{padding:8px 10px;border:1px solid var(--bd);text-align:center;vertical-align:middle;}
 .amt-tbl td:first-child{text-align:left;font-weight:600;width:130px;}
@@ -134,7 +134,7 @@ textarea{resize:vertical;min-height:72px;}
 .img-zone input[type="file"]{display:none;}
 .img-hint{font-size:12px;color:var(--muted);line-height:1.5;}
 .img-hint .icon{font-size:24px;display:block;margin-bottom:4px;}
-.img-preview{width:100%;max-height:180px;object-fit:contain;border-radius:4px;
+.img-preview{width:100%;max-height:320px;object-fit:contain;border-radius:4px;
   display:none;margin-bottom:8px;}
 .img-zone.has-img .img-hint{display:none;}
 .img-zone.has-img .img-preview{display:block;}
@@ -159,7 +159,7 @@ textarea{resize:vertical;min-height:72px;}
   border-radius:8px;overflow:hidden;}
 .party-col{padding:20px;}
 .party-col:first-child{border-right:1px solid var(--bd);}
-.party-title{font-weight:700;font-size:13px;margin-bottom:14px;color:var(--red);}
+.party-title{font-weight:700;font-size:14px;margin-bottom:14px;color:#1A1A1A;}
 
 /* ACTION BAR */
 .action-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;
@@ -204,15 +204,23 @@ textarea{resize:vertical;min-height:72px;}
 
 /* PRINT */
 @media print{
-  header,.tabs,.action-bar,.legend,.mode-area,.sig-bar,.img-remove{display:none!important;}
-  body{background:#fff;}
-  .main{margin:0;padding:0;max-width:100%;}
-  .card{break-inside:avoid;border:1px solid #CCC;}
+  header,.tabs,.action-bar,.legend,.mode-area,.sig-bar,.img-remove,
+  .ob,.field-err-msg{display:none!important;}
+  body{background:#fff;font-size:14pt;}
+  .main{margin:0;padding:4px;max-width:100%;}
+  .tab-content{display:block!important;}
+  #tab-order{page-break-after:always;break-after:page;}
+  .card{break-inside:avoid;border:1px solid #CCC;margin-bottom:10px;}
+  .card-header{background:#F0F0F0!important;color:#000!important;font-size:13pt;}
+  .sec{background:#F5F5F5!important;color:#333!important;}
   [data-owner] input,[data-owner] textarea,[data-owner] select{
     background:#fff!important;border:none!important;
-    border-bottom:1px solid #CCC!important;border-radius:0!important;}
-  .img-preview{display:block!important;}
-  .sig-canvas{border:1px solid #DDD;}
+    border-bottom:1px solid #BBB!important;border-radius:0!important;
+    font-size:13pt!important;}
+  .img-preview{display:block!important;max-height:none!important;}
+  .sig-canvas{border:1px solid #CCC;}
+  .amt-tbl{font-size:11pt;}
+  label.fl{font-size:9pt;color:#555;}
 }
 </style>
 </head>
@@ -362,9 +370,23 @@ textarea{resize:vertical;min-height:72px;}
           </div>
         </div>
         <div class="row">
-          <div class="f full" data-owner="kol">
-            <label class="fl">銀行帳戶 <span class="ob ob-k">網紅填寫</span>（銀行名稱 / 代碼 / 分行 / 帳號）</label>
-            <input type="text" id="l-kol-bank" placeholder="例：台灣銀行 / 004 / 板橋分行 / 0123456789012">
+          <div class="f" style="flex:2;min-width:140px" data-owner="kol">
+            <label class="fl">銀行名稱 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="l-bank-name" placeholder="例：台灣銀行">
+          </div>
+          <div class="f" style="flex:0 0 80px;min-width:70px" data-owner="kol">
+            <label class="fl">代碼</label>
+            <input type="text" id="l-bank-code" placeholder="004" maxlength="6">
+          </div>
+        </div>
+        <div class="row">
+          <div class="f" style="flex:2;min-width:140px" data-owner="kol">
+            <label class="fl">分行 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="l-bank-branch" placeholder="例：板橋分行">
+          </div>
+          <div class="f" style="flex:3;min-width:180px" data-owner="kol">
+            <label class="fl">帳號 <span class="ob ob-k">網紅填寫</span></label>
+            <input type="text" id="l-bank-account" placeholder="0123456789012" inputmode="numeric">
           </div>
         </div>
       </div>
@@ -401,7 +423,7 @@ textarea{resize:vertical;min-height:72px;}
       <div class="sec">附件上傳</div>
       <div class="fb">
         <div class="row">
-          <div class="f third" data-owner="kol">
+          <div class="f full" data-owner="kol" id="zone-id-front">
             <label class="fl">身分證影本－正面 <span class="ob ob-k">網紅填寫</span></label>
             <div class="img-zone" onclick="triggerUpload('img-id-front')" ondragover="dragOver(event)" ondrop="dropImg(event,'img-id-front')">
               <input type="file" id="img-id-front" accept="image/*" onchange="previewImg(this,'zone-id-front')">
@@ -410,7 +432,9 @@ textarea{resize:vertical;min-height:72px;}
               <button class="img-remove" onclick="removeImg(event,'img-id-front','zone-id-front')">×</button>
             </div>
           </div>
-          <div class="f third" data-owner="kol" id="zone-id-front">
+        </div>
+        <div class="row">
+          <div class="f full" data-owner="kol" id="zone-id-back">
             <label class="fl">身分證影本－反面 <span class="ob ob-k">網紅填寫</span></label>
             <div class="img-zone" onclick="triggerUpload('img-id-back')" ondragover="dragOver(event)" ondrop="dropImg(event,'img-id-back')">
               <input type="file" id="img-id-back" accept="image/*" onchange="previewImg(this,'zone-id-back')">
@@ -419,7 +443,9 @@ textarea{resize:vertical;min-height:72px;}
               <button class="img-remove" onclick="removeImg(event,'img-id-back','zone-id-back')">×</button>
             </div>
           </div>
-          <div class="f third" data-owner="kol" id="zone-id-back">
+        </div>
+        <div class="row">
+          <div class="f full" data-owner="kol" id="zone-bank">
             <label class="fl">銀行存摺影本 <span class="ob ob-k">網紅填寫</span></label>
             <div class="img-zone" onclick="triggerUpload('img-bank')" ondragover="dragOver(event)" ondrop="dropImg(event,'img-bank')">
               <input type="file" id="img-bank" accept="image/*" onchange="previewImg(this,'zone-bank')">
@@ -688,7 +714,7 @@ const KOL_REQUIRED = [
   { id:'l-kol-id',    label:'身分證號碼',   tab:'labor' },
   { id:'l-kol-addr1', label:'戶籍地址',     tab:'labor' },
   { id:'l-kol-phone', label:'聯絡電話',     tab:'labor' },
-  { id:'l-kol-bank',  label:'銀行帳戶',     tab:'labor' },
+  { id:'l-bank-account', label:'銀行帳號',   tab:'labor' },
   { id:'sig-kol',     label:'所得人簽名',   tab:'labor', type:'canvas' },
 ];
 
@@ -753,7 +779,14 @@ function validateKol() {
 
 function handlePrint() {
   if (!validateKol()) return;
+  const fanpage = (document.getElementById('o-fanpage')?.value.trim()
+                || document.getElementById('o-name')?.value.trim()
+                || '').replace(/[\\/:*?"<>|]/g, '');
+  const suffix  = fanpage ? `－${fanpage}` : '';
+  const origTitle = document.title;
+  document.title = `紅杉｜合約文件${suffix}`;
   window.print();
+  document.title = origTitle;
 }
 
 function switchTab(id, btn) {
