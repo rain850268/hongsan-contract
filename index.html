@@ -130,9 +130,11 @@ textarea:-webkit-autofill,select:-webkit-autofill{
 .sig-canvas{display:block;touch-action:none;cursor:crosshair;max-width:100%;}
 .sig-bar{padding:6px 12px;background:#FAFAFA;border-top:1px solid var(--bd);
   display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);}
-.sig-clear{padding:3px 10px;border:1px solid #DDD;background:#fff;border-radius:4px;
-  cursor:pointer;font-size:11px;}
+.sig-clear,.sig-upload{padding:3px 10px;border:1px solid #DDD;background:#fff;border-radius:4px;
+  cursor:pointer;font-size:11px;color:var(--muted);}
 .sig-clear:hover{background:#FDEAE9;border-color:#E8493F;color:#C93028;}
+.sig-upload:hover{background:#EEF4FB;border-color:#7AACDB;color:#2B6CB0;}
+.sig-upload:disabled{opacity:.4;cursor:not-allowed;}
 
 /* IMAGE UPLOAD */
 .img-zone{border:2px dashed var(--bd);border-radius:8px;padding:20px 16px;
@@ -435,21 +437,21 @@ textarea:-webkit-autofill,select:-webkit-autofill{
             <div class="sign-label">經辦人 <span class="ob ob-a" style="text-transform:none;letter-spacing:0">公司填寫</span></div>
             <div class="sig-wrap">
               <canvas class="sig-canvas" id="sig-agent" width="220" height="90"></canvas>
-              <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-agent')">清除</button></div>
+              <div class="sig-bar"><span>在此處簽名</span><button class="sig-upload" onclick="uploadSig('sig-agent')">上傳圖片</button><button class="sig-clear" onclick="clearSig('sig-agent')">清除</button></div>
             </div>
           </div>
           <div data-owner="admin">
             <div class="sign-label">主管簽名（簽章）<span class="ob ob-a" style="text-transform:none;letter-spacing:0">公司填寫</span></div>
             <div class="sig-wrap">
               <canvas class="sig-canvas" id="sig-manager" width="220" height="90"></canvas>
-              <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-manager')">清除</button></div>
+              <div class="sig-bar"><span>在此處簽名</span><button class="sig-upload" onclick="uploadSig('sig-manager')">上傳圖片</button><button class="sig-clear" onclick="clearSig('sig-manager')">清除</button></div>
             </div>
           </div>
           <div data-owner="kol">
             <div class="sign-label">所得人簽名（簽章）<span class="ob ob-k" style="text-transform:none;letter-spacing:0">網紅填寫</span></div>
             <div class="sig-wrap">
               <canvas class="sig-canvas" id="sig-kol" width="220" height="90"></canvas>
-              <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-kol')">清除</button></div>
+              <div class="sig-bar"><span>在此處簽名</span><button class="sig-upload" onclick="uploadSig('sig-kol')">上傳圖片</button><button class="sig-clear" onclick="clearSig('sig-kol')">清除</button></div>
             </div>
           </div>
         </div>
@@ -669,7 +671,7 @@ textarea:-webkit-autofill,select:-webkit-autofill{
               <div class="sign-label" style="text-align:left;margin-bottom:6px">代表人簽章</div>
               <div class="sig-wrap" data-owner="admin">
                 <canvas class="sig-canvas" id="sig-company" width="340" height="100"></canvas>
-                <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-company')">清除</button></div>
+                <div class="sig-bar"><span>在此處簽名</span><button class="sig-upload" onclick="uploadSig('sig-company')">上傳圖片</button><button class="sig-clear" onclick="clearSig('sig-company')">清除</button></div>
               </div>
             </div>
           </div>
@@ -698,7 +700,7 @@ textarea:-webkit-autofill,select:-webkit-autofill{
               <div class="sign-label" style="text-align:left;margin-bottom:6px">乙方簽章<span class="ob ob-k" style="text-transform:none;letter-spacing:0">網紅填寫</span></div>
               <div class="sig-wrap" data-owner="kol">
                 <canvas class="sig-canvas" id="sig-kol2" width="340" height="100"></canvas>
-                <div class="sig-bar"><span>在此處簽名</span><button class="sig-clear" onclick="clearSig('sig-kol2')">清除</button></div>
+                <div class="sig-bar"><span>在此處簽名</span><button class="sig-upload" onclick="uploadSig('sig-kol2')">上傳圖片</button><button class="sig-clear" onclick="clearSig('sig-kol2')">清除</button></div>
               </div>
             </div>
           </div>
@@ -965,6 +967,8 @@ function updateSigStates() {
     const locked = owner && owner !== 'fixed' && owner !== currentMode;
     c.style.cursor = locked ? 'not-allowed' : 'crosshair';
     c.style.opacity = locked ? '.5' : '1';
+    const uploadBtn = c.parentElement?.querySelector('.sig-upload');
+    if (uploadBtn) uploadBtn.disabled = !!locked;
   });
 }
 
@@ -973,6 +977,35 @@ function clearSig(id) {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function uploadSig(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const owner = canvas.closest('[data-owner]')?.dataset.owner;
+  if (owner && owner !== 'fixed' && owner !== currentMode) return;
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const scale = Math.min(canvas.width / img.width, canvas.height / img.height) * 0.9;
+        const x = (canvas.width  - img.width  * scale) / 2;
+        const y = (canvas.height - img.height * scale) / 2;
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
 }
 
 // ── 計算扣款 ─────────────────────────────────────────
