@@ -216,7 +216,7 @@ textarea:-webkit-autofill,select:-webkit-autofill{
 
 /* PRINT */
 @media print{
-  @page{size:A4 portrait;margin:12mm 14mm;}
+  @page{size:A4 portrait;margin:12mm 14mm 0 14mm;}
   header,.tabs,.action-bar,.legend,.mode-area,.sig-bar,.img-remove,
   .ob,.field-err-msg{display:none!important;}
   body{background:#fff;font-size:11pt;-webkit-print-color-adjust:exact;}
@@ -564,7 +564,7 @@ textarea:-webkit-autofill,select:-webkit-autofill{
             <label class="fl">費用總計 <span class="ob ob-a">公司填寫</span></label>
             <div class="amt-input-wrap">
               <span>NT$</span>
-              <input type="number" id="o-fee" placeholder="0" min="0">
+              <input type="text" id="o-fee" placeholder="0" inputmode="numeric">
             </div>
           </div>
         </div>
