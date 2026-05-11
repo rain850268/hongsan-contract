@@ -10,7 +10,7 @@
   --admin-bg:#EEF4FB; --admin-bd:#7AACDB;
   --kol-bg:#FEF0EF; --kol-bd:#E8B4B0;
   --bd:#D8D8D8; --text:#1A1A1A; --muted:#777;
-  --locked-bg:#F5F5F5; --locked-text:#BBBBBB;
+  --locked-bg:#F5F5F5; --locked-text:#444444;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;
@@ -402,7 +402,7 @@ textarea:-webkit-autofill,select:-webkit-autofill{
           </div>
           <div class="f half" data-owner="admin">
             <label class="fl">日期 <span class="ob ob-a">公司填寫</span></label>
-            <input type="date" id="l-date">
+            <input type="text" id="l-date" placeholder="yyyy/mm/dd" inputmode="numeric">
           </div>
         </div>
         <div class="row">
@@ -544,21 +544,21 @@ textarea:-webkit-autofill,select:-webkit-autofill{
         <div class="row">
           <div class="f half" data-owner="admin">
             <label class="fl">簽署日期 <span class="ob ob-a">公司填寫</span></label>
-            <input type="date" id="o-sign-date">
+            <input type="text" id="o-sign-date" placeholder="yyyy/mm/dd" inputmode="numeric">
           </div>
           <div class="f half" data-owner="admin">
             <label class="fl">合作開始日期 <span class="ob ob-a">公司填寫</span></label>
-            <input type="date" id="o-start-date">
+            <input type="text" id="o-start-date" placeholder="yyyy/mm/dd" inputmode="numeric">
           </div>
         </div>
         <div class="row">
           <div class="f third" data-owner="admin">
             <label class="fl">審核日期 <span class="ob ob-a">公司填寫</span></label>
-            <input type="date" id="o-review-date">
+            <input type="text" id="o-review-date" placeholder="yyyy/mm/dd" inputmode="numeric">
           </div>
           <div class="f third" data-owner="admin">
             <label class="fl">刊登日期 <span class="ob ob-a">公司填寫</span></label>
-            <input type="date" id="o-publish-date">
+            <input type="text" id="o-publish-date" placeholder="yyyy/mm/dd" inputmode="numeric">
           </div>
           <div class="f third" data-owner="admin">
             <label class="fl">費用總計 <span class="ob ob-a">公司填寫</span></label>
